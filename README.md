@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # FieldPoint · Fase 3: producto instalable y salida al mercado
 
 Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la nube (Vercel + PostgreSQL)** y como **aplicación de escritorio (Electron + PostgreSQL embebido)**, con la identidad visual del manual de FieldPoint.
@@ -6,7 +5,8 @@ Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la
 ## Funciones
 | Módulo | Qué hace |
 |---|---|
-| CRUD de 9 módulos | Productos, clientes, reservas, promociones, canchas, mesas, proveedores, categorías y usuarios |
+| CRUD de 8 módulos | Productos, clientes, reservas, promociones, canchas, proveedores, categorías y usuarios |
+| Mesas con estado | Tablero con estado (Libre / Ocupada), consumos por producto y cliente acumulados en la cuenta de la mesa hasta el cierre, y cierre con comprobante. El administrador crea y elimina mesas; el operador marca ocupada/libre y registra consumos |
 | Cobrar | Comprobante con cancha, mesa y consumos; método de pago (efectivo, transferencia, tarjeta, QR); descuenta inventario; promociones; QR de pago |
 | Tirillas y facturas | PDF de tirilla (80 mm) y factura (carta) con logo, colores y datos del negocio (nombre, NIT, dirección, logo) y número consecutivo |
 | Reserva rápida | Nombre + celular → reserva, tirilla y recordatorio por WhatsApp (Twilio o WhatsApp Business; sin credenciales queda simulado) |
@@ -19,16 +19,16 @@ Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la
 | Seguridad | scrypt, JWT, autorización por rol, límite de intentos, cabeceras HTTP |
 
 ## Estructura
-`api/index.js` (API) · `lib/` (módulos) · `public/index.html` (aplicación web) · `public/prototipo.html` (prototipo de la Fase 2) · `schema.sql` (23 tablas) · `desktop/main.js` (Electron) · `installer/` (NSIS e Inno Setup) · `scripts/` (respaldo, restauración y licencias) · `tests/` (API, Selenium y Playwright) · `jmeter/fieldpoint.jmx` · `sonar-project.properties`
+`api/index.js` (API) · `lib/` (módulos) · `public/index.html` + `public/app.js` (aplicación web) · `public/theme.css` (tema global con la identidad visual) · `public/assets` y `public/fonts` (logo y tipografías) · `public/prototipo.html` (prototipo de la Fase 2) · `schema.sql` (23 tablas) · `desktop/main.js` (Electron) · `installer/` (NSIS e Inno Setup) · `scripts/` (respaldo, restauración y licencias) · `tests/` (API, Selenium y Playwright) · `jmeter/fieldpoint.jmx` · `sonar-project.properties`
 
 ## Ejecutar en local
 ```bash
 npm install
 npm start               # http://localhost:3000 (sin DATABASE_URL usa PostgreSQL embebido en memoria: modo demo)
-npm test                # 34 pruebas de la API
+npm test                # 47 pruebas de la API
 npm run test:coverage   # genera coverage/lcov.info para SonarQube
 npm run lint
-python3 tests/ui_check_playwright.py http://localhost:3000 capturas   # verificación de interfaz (27 casos)
+python3 tests/ui_check_playwright.py http://localhost:3000 capturas   # verificación de interfaz (42 casos)
 ```
 Usuarios iniciales: `admin@fieldpoint.co` (Administrador) y `operador@fieldpoint.co` (Operador). Contraseña inicial: `SEED_PASSWORD` (por defecto `FieldPoint2026*`; cámbiela).
 
@@ -63,6 +63,12 @@ node scripts/generar-licencia.js licencia-privada.pem "Negocio" "NIT" [id-del-eq
 - **SonarQube**: `npm run test:coverage` y `sonar-scanner -Dsonar.host.url=<servidor> -Dsonar.token=<token>`.
 - **Selenium**: `BASE_URL=https://<proyecto>.vercel.app npm run test:selenium` (Chrome y chromedriver).
 - **JMeter 5.x**: `jmeter -n -t jmeter/fieldpoint.jmx -Jhost=<proyecto>.vercel.app -Jport=443 -Jprotocol=https -Jusers=50 -Jramp=60 -Jduration=300 -l resultados.jtl -e -o informe/`
-=======
-# fieldpoint
->>>>>>> 9ddaf4c0ffae674b4c2963fb55e7d9019e0559e2
+
+## Tema visual (theme.css)
+Un solo archivo, `public/theme.css`, define la identidad del manual para todas las pantallas: variables de color (`--navy`, `--org`, `--ok`, `--err`…), tipografías Montserrat y Open Sans incluidas en `public/fonts` (funciona sin internet), barra lateral en escritorio y navegación inferior en móvil, íconos de línea de un solo estilo, botones con transiciones suaves, mensajes de validación corporativos y modo oscuro. Respeta `prefers-reduced-motion`. Para cambiar la apariencia basta editar las variables del bloque `:root`.
+
+## Mesas: reglas
+- Estado: Libre u Ocupada. Ocupar abre una cuenta (con cliente opcional); no se edita el estado a mano.
+- Consumos: producto + cliente (por defecto el de la mesa) + cantidad; se acumulan en la cuenta. El stock se reserva entre las mesas abiertas y se descuenta al cerrar.
+- Marcar libre solo si no hay consumos. Cerrar genera el comprobante (tirilla o factura), conserva el precio registrado y deja la mesa libre.
+- Eliminar una mesa solo es posible si no tiene historial de cuentas.

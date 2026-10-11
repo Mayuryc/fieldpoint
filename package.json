@@ -5,8 +5,8 @@
   "main": "desktop/main.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test tests/api.test.js tests/mejoras.test.js",
-    "test:coverage": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info tests/api.test.js tests/mejoras.test.js",
+    "test": "node --test tests/api.test.js tests/mejoras.test.js tests/mesas.test.js",
+    "test:coverage": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info tests/api.test.js tests/mejoras.test.js tests/mesas.test.js",
     "test:selenium": "node --test tests/selenium/crud.test.js",
     "lint": "eslint .",
     "desktop": "electron .",
@@ -27,9 +27,7 @@
   },
   "devDependencies": {
     "eslint": "^10.12.0",
-    "selenium-webdriver": "^4.50.0",
-    "electron": "^33.2.0",
-    "electron-builder": "^26.15.3"
+    "selenium-webdriver": "^4.50.0"
   },
   "private": true,
   "engines": {
@@ -45,7 +43,6 @@
       "api/**",
       "lib/**",
       "public/**",
-      "assets/**",
       "desktop/**",
       "server.js",
       "schema.sql",
@@ -58,7 +55,7 @@
       "target": [
         "nsis"
       ],
-      "icon": "assets/icon.png"
+      "icon": "public/assets/icon.png"
     },
     "nsis": {
       "oneClick": true,

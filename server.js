@@ -6,7 +6,7 @@ const handler = require('./api/index');
 const backup = require('./lib/backup');
 
 const PUB = path.join(__dirname, 'public');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.png': 'image/png', '.ttf': 'font/ttf', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 
 function createServer() {
   return http.createServer((req, res) => {

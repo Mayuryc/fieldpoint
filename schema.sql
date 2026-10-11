@@ -21,3 +21,6 @@ CREATE TABLE IF NOT EXISTS comprobantes (id_comprobante SERIAL PRIMARY KEY, nume
 CREATE TABLE IF NOT EXISTS comprobante_items (id_item SERIAL PRIMARY KEY, id_comprobante INT NOT NULL REFERENCES comprobantes(id_comprobante), tipo VARCHAR(20) NOT NULL, descripcion VARCHAR(150) NOT NULL, id_producto INT REFERENCES productos(id_producto), id_promocion INT REFERENCES promociones(id_promocion), cantidad INT NOT NULL, precio_unitario DECIMAL(10,2) NOT NULL, descuento DECIMAL(10,2) DEFAULT 0, subtotal DECIMAL(10,2) NOT NULL);
 CREATE TABLE IF NOT EXISTS notificaciones (id_notificacion SERIAL PRIMARY KEY, id_reserva INT REFERENCES reservas(id_reserva), telefono VARCHAR(20), mensaje TEXT, canal VARCHAR(20), estado VARCHAR(20), fecha TIMESTAMP DEFAULT now());
 CREATE TABLE IF NOT EXISTS licencia (id INT PRIMARY KEY, clave TEXT NOT NULL, negocio VARCHAR(100), hardware VARCHAR(100), activada TIMESTAMP DEFAULT now());
+ALTER TABLE detalle_cuenta ADD COLUMN IF NOT EXISTS id_cliente INT REFERENCES clientes(id_cliente);
+ALTER TABLE cuentas ADD COLUMN IF NOT EXISTS id_comprobante INT REFERENCES comprobantes(id_comprobante);
+CREATE UNIQUE INDEX IF NOT EXISTS mesas_numero_uq ON mesas(numero);

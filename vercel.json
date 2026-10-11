@@ -30,7 +30,7 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "{schema.sql,assets/**,lib/license-public.pem}",
+      "includeFiles": "{schema.sql,public/assets/**,public/fonts/**,lib/license-public.pem}",
       "maxDuration": 30
     }
   }

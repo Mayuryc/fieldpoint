@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FieldPoint · Fase 3: producto instalable y salida al mercado
 
 Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la nube (Vercel + PostgreSQL)** y como **aplicación de escritorio (Electron + PostgreSQL embebido)**, con la identidad visual del manual de FieldPoint.
@@ -62,3 +63,6 @@ node scripts/generar-licencia.js licencia-privada.pem "Negocio" "NIT" [id-del-eq
 - **SonarQube**: `npm run test:coverage` y `sonar-scanner -Dsonar.host.url=<servidor> -Dsonar.token=<token>`.
 - **Selenium**: `BASE_URL=https://<proyecto>.vercel.app npm run test:selenium` (Chrome y chromedriver).
 - **JMeter 5.x**: `jmeter -n -t jmeter/fieldpoint.jmx -Jhost=<proyecto>.vercel.app -Jport=443 -Jprotocol=https -Jusers=50 -Jramp=60 -Jduration=300 -l resultados.jtl -e -o informe/`
+=======
+# fieldpoint
+>>>>>>> 9ddaf4c0ffae674b4c2963fb55e7d9019e0559e2

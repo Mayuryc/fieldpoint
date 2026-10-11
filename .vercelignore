@@ -1,0 +1,12 @@
+server.js
+desktop
+installer
+tests
+scripts
+jmeter
+coverage
+dist
+*.md
+sonar-project.properties
+eslint.config.js
+licencia-demo.txt

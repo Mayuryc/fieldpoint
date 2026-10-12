@@ -1,0 +1,158 @@
+/* ==========================================================================
+   FieldPoint · Tema global (Manual de Identidad Visual)
+   Paleta: azul oscuro #0A1F44 · naranja #F15A24 · blanco · gris claro #D9D9D9
+   Tipografía: Montserrat (títulos, botones, menús) y Open Sans (texto)
+   Mismo diseño del prototipo: barra lateral en escritorio, navegación inferior en móvil.
+   ========================================================================== */
+@font-face{font-family:Montserrat;font-weight:600 700;font-display:swap;src:url(fonts/Montserrat-Bold.ttf) format("truetype")}
+@font-face{font-family:"Open Sans";font-weight:400 700;font-display:swap;src:url(fonts/OpenSans-Regular.ttf) format("truetype")}
+
+/* ---- 1. Variables ---- */
+:root{
+  --navy:#0A1F44;--org:#F15A24;--white:#fff;--gray:#D9D9D9;--ok:#2E7D4F;--err:#C0392B;--info:#2B4FA3;
+  --bg:#F4F6FA;--card:#fff;--tx:#0A1F44;--mut:#5A6478;--line:#DDE2EA;--use:#0A1F44;--hover:rgba(10,31,68,.06);
+  --r-card:20px;--r-btn:16px;--r-field:14px;--sh:0 8px 24px rgba(10,31,68,.10);--sh-lg:0 18px 48px rgba(10,31,68,.25);
+  --side:248px;--ease:cubic-bezier(.2,.8,.2,1);
+  --f-title:Montserrat,Arial,sans-serif;--f-body:"Open Sans",Arial,sans-serif;
+  box-sizing:border-box;
+}
+@media(prefers-color-scheme:dark){:root{--bg:#071433;--card:#0F2552;--tx:#fff;--mut:#D9D9D9;--line:#28427C;--use:#2B4FA3;--hover:rgba(255,255,255,.08);--sh:0 8px 24px rgba(0,0,0,.35)}}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/24px var(--f-body);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--f-title);margin:0;line-height:1.25}
+h1{font-size:26px;font-weight:700}h2{font-size:18px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}h3{font-size:16px;font-weight:600}
+a{color:var(--org)}small{color:var(--mut);font-size:13px}.acento{color:var(--org)}.der{text-align:right}
+:focus-visible{outline:3px solid var(--org);outline-offset:2px;border-radius:8px}
+
+/* ---- 2. Íconos ---- */
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
+h2 .ic{color:var(--org)}
+
+/* ---- 3. Botones (animaciones suaves) ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border:0;border-radius:var(--r-btn);background:var(--org);color:var(--navy);font:600 15px var(--f-title);cursor:pointer;
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease),background-color .18s,color .18s,border-color .18s,opacity .18s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(241,90,36,.32)}
+.btn:active{transform:translateY(0) scale(.97);box-shadow:none}
+.btn.o{background:transparent;color:var(--tx);border:2px solid var(--tx)}.btn.o:hover{background:var(--hover);box-shadow:0 8px 18px rgba(10,31,68,.14)}
+.btn.s{background:var(--navy);color:#fff}.btn.s:hover{box-shadow:0 10px 20px rgba(10,31,68,.35)}
+.btn.d{background:var(--err);color:#fff}.btn.d:hover{box-shadow:0 10px 20px rgba(192,57,43,.35)}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px;border-radius:14px}
+.btn.ic-only{min-width:40px;padding:0}
+.btn:disabled{background:var(--gray);color:#666;border-color:transparent;cursor:not-allowed;transform:none;box-shadow:none;opacity:.8}
+.btn.o:disabled{background:transparent;color:var(--mut);border:2px solid var(--line)}
+
+/* ---- 4. Tarjetas, indicadores y chips ---- */
+.card{background:var(--card);border-radius:var(--r-card);padding:20px;box-shadow:var(--sh);transition:box-shadow .2s var(--ease)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.kpi{background:var(--card);border-radius:var(--r-card);padding:16px 18px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:2px;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.kpi:hover{transform:translateY(-3px)}
+.kpi .ic{color:var(--org);width:24px;height:24px;margin-bottom:4px}
+.kpi b{font:700 24px var(--f-title);color:var(--org);white-space:nowrap}.kpi span{font-size:13px;color:var(--mut)}
+.r2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.r3{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.sec{margin-top:16px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:2px 12px;font:600 13px var(--f-title);background:var(--ok);color:#fff;white-space:nowrap}
+.chip.r{background:var(--org);color:var(--navy)}.chip.e{background:var(--err)}.chip.u{background:var(--use)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ok);margin-right:4px}.dot.ocupada{background:var(--org)}
+.chip .dot{margin:0;background:currentColor}
+.fila{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.fila:last-of-type{border:0}.fr{margin-left:auto}
+.vacio{color:var(--mut);text-align:center;padding:14px 0;margin:0}
+.note{font-size:13px;color:var(--mut);text-align:center}
+
+/* ---- 5. Formularios y validación corporativa ---- */
+label{display:block;font-size:14px;color:var(--mut);margin:12px 0 4px}
+.fld{margin-top:4px}.fld.chk{display:flex;align-items:center;gap:10px}.fld.chk label{margin:0;order:2}
+input,select,textarea{width:100%;min-height:46px;border-radius:var(--r-field);border:2px solid var(--line);padding:0 14px;font:16px var(--f-body);background:var(--card);color:var(--tx);transition:border-color .18s,box-shadow .18s}
+textarea{min-height:90px;padding:10px 14px}
+input[type=checkbox]{width:24px;min-height:24px;accent-color:var(--org)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--org);box-shadow:0 0 0 4px rgba(241,90,36,.18)}
+input.invalid,select.invalid{border-color:var(--err);box-shadow:0 0 0 4px rgba(192,57,43,.15)}
+.msg{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:12px 14px;border-radius:14px;font-size:14px;border-left:6px solid var(--err);background:#FDECEA;color:#7B241C;animation:entra .25s var(--ease)}
+.msg.ok{border-color:var(--ok);background:#E7F4EC;color:#1B5E3A}
+.msg .ic{margin-top:1px}
+.alert{display:block;background:#FDEFE9;color:#7a2a0e;border-left:6px solid var(--org);border-radius:12px;padding:10px 14px;margin-bottom:14px}
+.alert .ic{color:var(--org);margin-right:8px;vertical-align:-4px}
+.err{color:var(--err);min-height:22px;font-size:14px}.err.on{animation:vibra .35s}
+.row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 16px}.bar input{flex:1;min-width:180px}.bar select{flex:1;min-width:150px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:10px;max-width:92%;padding:12px 18px;border-radius:16px;color:#fff;font-size:14px;box-shadow:var(--sh-lg);animation:sube .28s var(--ease)}
+#toast.ok{background:var(--navy);border-left:6px solid var(--ok)}#toast.err{background:var(--err);color:#fff;min-height:0;border-left:6px solid #7B241C}
+
+/* ---- 6. Tablas ---- */
+table{width:100%;border-collapse:collapse}
+th{background:var(--navy);color:#fff;text-align:left;padding:10px 10px;font:600 13px var(--f-title);white-space:nowrap}th:first-child{border-radius:12px 0 0 0}th:last-child{border-radius:0 12px 0 0}
+td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}tbody tr{transition:background-color .15s}tbody tr:hover{background:var(--hover)}
+td.acc{display:flex;gap:6px;flex-wrap:nowrap}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ---- 7. Reportes y utilidades ---- */
+.bars{display:flex;align-items:flex-end;gap:6px;height:150px}.bars div{flex:1;text-align:center;font-size:11px;color:var(--mut)}
+.bars i{display:block;background:var(--navy);border-radius:6px 6px 0 0;margin-bottom:3px;transition:height .4s var(--ease)}.bars .h i{background:var(--org)}
+.wa{white-space:pre-wrap;background:#DCF8C6;color:#111;border-radius:14px;padding:14px;font-size:14px}
+.qr,.qrt{display:block;margin:8px auto;text-align:center}.qr{width:150px;height:150px}.qrt{font-size:13px;color:var(--mut)}
+.cargando{display:flex;align-items:center;justify-content:center;gap:12px;padding:40px;color:var(--mut)}
+.spin{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--org);border-radius:50%;animation:gira .8s linear infinite}
+
+/* ---- 8. Mesas ---- */
+.leyenda{display:flex;align-items:center;gap:4px;font-size:14px;color:var(--mut);margin-right:auto}.leyenda .dot{margin-left:12px}
+.mesas{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.mesa{position:relative;display:flex;flex-direction:column;gap:2px;background:var(--card);border-radius:var(--r-card);padding:16px;box-shadow:var(--sh);border-left:8px solid var(--ok);cursor:pointer;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease),background-color .2s}
+.mesa.libre{background:linear-gradient(135deg,rgba(46,125,79,.10),transparent 60%),var(--card)}
+.mesa.ocupada{border-left-color:var(--org);background:linear-gradient(135deg,rgba(241,90,36,.14),transparent 60%),var(--card)}
+.mesa:hover{transform:translateY(-4px);box-shadow:var(--sh-lg)}
+.mesa header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mesa .cl{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:14px;margin:8px 0 0}
+.mesa .mt{font:700 22px var(--f-title);color:var(--tx);margin:2px 0}.mesa footer{display:flex;gap:8px;margin-top:10px}.mesa footer .btn:first-child{flex:1}
+.mhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.mhead h2{margin:0}
+.sub{display:flex;align-items:center;gap:6px;color:var(--mut);margin:0 0 12px}
+.cant{display:flex;align-items:center;gap:8px}.cant b{min-width:22px;text-align:center}
+.addrow{display:grid;grid-template-columns:2fr 90px 1.4fr auto;gap:10px;margin:14px 0}
+.total{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:2px solid var(--line)}.total b{font:700 24px var(--f-title);color:var(--org)}
+.porcli{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
+.cierre{border-top:2px solid var(--line);margin-top:10px;padding-top:6px}.cierre .btn{width:100%;margin-top:12px}
+
+/* ---- 9. Ventanas ---- */
+.mo{position:fixed;inset:0;background:rgba(10,31,68,.62);display:grid;place-items:center;padding:16px;z-index:20;overflow:auto;animation:aparece .2s}
+.mo .card{width:100%;max-width:480px;max-height:92vh;overflow:auto;box-shadow:var(--sh-lg);animation:zoom .24s var(--ease)}.mo .card.wide{max-width:780px}
+
+/* ---- 10. Inicio de sesión ---- */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(1200px 600px at 80% -10%,rgba(241,90,36,.28),transparent 60%),var(--navy)}
+#login .card{width:100%;max-width:420px;text-align:center;animation:sube .4s var(--ease)}
+#login img{width:290px;max-width:100%;margin-bottom:6px}#login p{color:var(--mut);margin:0 0 6px}#login label{text-align:left}#login .btn{width:100%;margin-top:14px}#login .note a{font-size:13px}
+
+/* ---- 11. Estructura: barra lateral (escritorio) / navegación inferior (móvil) ---- */
+.side{position:fixed;z-index:10;left:0;right:0;bottom:0;background:var(--navy);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 20px rgba(10,31,68,.25)}
+.brand{display:none}
+.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+.nav-label{display:none}
+.tab{flex:none;min-width:76px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border:0;border-radius:14px;background:transparent;color:var(--gray);font:600 11px var(--f-title);cursor:pointer;transition:background-color .18s,color .18s,transform .18s var(--ease)}
+.tab:hover{background:rgba(255,255,255,.1);color:#fff}.tab:active{transform:scale(.95)}
+.tab.on{background:var(--org);color:var(--navy)}
+.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:var(--bg)}
+.topbar .mini{width:36px;height:36px}.topbar h1{flex:1}
+.user{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mut)}.user .btn{min-height:38px}
+main{padding:4px 16px calc(110px + env(safe-area-inset-bottom,0px));max-width:1180px;animation:entra .3s var(--ease)}
+@media(min-width:640px){.tab{min-width:92px;font-size:12px}main{padding-left:28px;padding-right:28px}.topbar{padding-left:28px;padding-right:28px}}
+@media(min-width:900px){
+  .side{top:0;right:auto;bottom:0;width:var(--side);display:flex;flex-direction:column;padding:22px 14px;overflow-y:auto;box-shadow:none}
+  .brand{display:block;width:176px;margin:0 0 18px 6px}
+  .nav{flex-direction:column;gap:2px;overflow:visible}
+  .nav-label{display:block;margin:14px 10px 4px;font:700 11px var(--f-title);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .tab{flex-direction:row;justify-content:flex-start;gap:12px;min-width:0;width:100%;padding:11px 14px;font-size:14px;min-height:44px}
+  .tab .ic{width:22px;height:22px}
+  .topbar,main{margin-left:var(--side)}
+  main{padding-bottom:40px}#toast{bottom:28px}
+}
+@media(max-width:560px){h1{font-size:21px}.addrow{grid-template-columns:1fr 80px}.addrow select:nth-child(3),.addrow .btn{grid-column:1/-1}.user #who{display:none}.card{padding:16px}.mesa .mt{font-size:20px}}
+
+/* ---- 12. Animaciones ---- */
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+@keyframes zoom{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes sube{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+#login .card{animation-name:subeLogin}@keyframes subeLogin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes vibra{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

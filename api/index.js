@@ -108,7 +108,7 @@ module.exports = async function handler(req, res) {
   try {
     const url = new URL(req.url, 'http://localhost');
     const route = (url.searchParams.get('p') ?? url.pathname.replace(/^\/api\/?/, '')).replace(/^\/+|\/+$/g, '');
-    const [name, rawId, sub] = route.split('/');
+    const [name, rawId, sub, sub2] = route.split('/');
     if (name === 'health') return send(res, 200, { ok: true, db: await mode() });
     if (name === 'login' && req.method === 'POST') return await login(req, res, await readJson(req));
     const user = auth.fromRequest(req);
@@ -117,7 +117,7 @@ module.exports = async function handler(req, res) {
     if (!['GET', 'POST', 'PUT', 'DELETE'].includes(req.method)) return send(res, 405, { error: 'Método no permitido' });
     const id = rawId === undefined ? null : (Number.isInteger(Number(rawId)) && rawId !== '' ? Number(rawId) : rawId);
     const body = req.method === 'POST' || req.method === 'PUT' ? await readJson(req) : {};
-    if (await especial({ req, res, user, name, id, sub, body, sp: url.searchParams })) return;
+    if (await especial({ req, res, user, name, id, sub, sub2, body, sp: url.searchParams })) return;
     const r = RES[name];
     if (!r) return send(res, 404, { error: 'Ruta no encontrada' });
     const writing = req.method !== 'GET';

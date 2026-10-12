@@ -109,7 +109,12 @@ module.exports = async function handler(req, res) {
     const url = new URL(req.url, 'http://localhost');
     const route = (url.searchParams.get('p') ?? url.pathname.replace(/^\/api\/?/, '')).replace(/^\/+|\/+$/g, '');
     const [name, rawId, sub, sub2] = route.split('/');
-    if (name === 'health') return send(res, 200, { ok: true, db: await mode() });
+    if (name === 'health') {
+      try { return send(res, 200, { ok: true, db: await mode() }); } catch (e) {
+        console.error('health:', e.message);
+        return send(res, 503, { ok: false, db: 'error', codigo: e.code || null, detalle: String(e.message).replace(/\w+:\/\/\S+/g, '[url]').slice(0, 160) });
+      }
+    }
     if (name === 'login' && req.method === 'POST') return await login(req, res, await readJson(req));
     const user = auth.fromRequest(req);
     if (!user) return send(res, 401, { error: 'Sesión requerida' });

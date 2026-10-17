@@ -241,6 +241,9 @@ $('#tb').onclick = async (e) => {
   const b = e.target.closest('button'); if (!b) return; const id = b.closest('tr').dataset.id; const row = ROWS.find((r) => r[CFG[CUR].pk] == id);
   if (b.dataset.a === 'h') return hist(id);
   if (b.dataset.a === 'e') form(row);
-  else if (confirm('¿Eliminar este registro?')) { try { const rr = await api('DELETE', CUR + '/' + id); toast(rr.mensaje || 'Registro eliminado'); list(); } catch (er) { toast(er.message, 1); } }
+  else if (confirm('¿Eliminar este registro?')) { try {
+    const rr = await api('DELETE', CUR + '/' + id); toast(rr.mensaje || 'Registro eliminado'); list();
+    if (rr.desactivado && confirm('El usuario tiene historial y quedó desactivado. ¿Desea eliminarlo definitivamente?\n\nSus operaciones anteriores (cobros, auditoría) se conservan, pero sin su nombre.')) { await api('DELETE', CUR + '/' + id + '?definitivo=1'); toast('Usuario eliminado definitivamente'); list(); }
+  } catch (er) { toast(er.message, 1); } }
 };
 if (TOKEN && USER) start();

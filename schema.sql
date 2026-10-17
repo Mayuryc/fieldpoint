@@ -24,3 +24,7 @@ CREATE TABLE IF NOT EXISTS licencia (id INT PRIMARY KEY, clave TEXT NOT NULL, ne
 ALTER TABLE detalle_cuenta ADD COLUMN IF NOT EXISTS id_cliente INT REFERENCES clientes(id_cliente);
 ALTER TABLE cuentas ADD COLUMN IF NOT EXISTS id_comprobante INT REFERENCES comprobantes(id_comprobante);
 CREATE UNIQUE INDEX IF NOT EXISTS mesas_numero_uq ON mesas(numero);
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS usuario VARCHAR(50);
+ALTER TABLE usuarios ALTER COLUMN correo DROP NOT NULL;
+UPDATE usuarios u SET usuario = CASE WHEN (SELECT COUNT(*) FROM usuarios x WHERE split_part(x.correo,'@',1)=split_part(u.correo,'@',1) AND x.id_usuario<u.id_usuario)=0 THEN split_part(u.correo,'@',1) ELSE split_part(u.correo,'@',1) || u.id_usuario END WHERE usuario IS NULL OR usuario='';
+CREATE UNIQUE INDEX IF NOT EXISTS usuarios_usuario_uq ON usuarios (lower(usuario));

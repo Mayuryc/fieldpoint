@@ -7,6 +7,21 @@ const { audit } = require('../lib/audit');
 const { especial, licenciaActiva } = require('../lib/rutas');
 const attempts = new Map();
 
+/** Correo con una sola arroba y un punto en el dominio, sin espacios (sin expresiones regulares de tiempo superlineal). */
+function correoValido(c) {
+  const partes = String(c).split('@');
+  if (partes.length !== 2 || !partes[0] || /\s/.test(c)) return false;
+  const p = partes[1].lastIndexOf('.');
+  return p > 0 && p < partes[1].length - 1;
+}
+/** Quita las barras del principio y del final de una ruta. */
+function recortarBarras(s) {
+  let a = 0; let b = s.length;
+  while (a < b && s[a] === '/') a++;
+  while (b > a && s[b - 1] === '/') b--;
+  return s.slice(a, b);
+}
+
 function coerce(type, v) {
   if (v === undefined || v === null || v === '') return { v: null };
   switch (type[0]) {
@@ -27,7 +42,7 @@ function build(r, body, insert) {
     if (c.e || (c.v === null && type.endsWith('!'))) return { error: `Valor no válido en ${name}` };
     out[name] = c.v;
   }
-  if (out.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(out.correo)) return { error: 'Correo no válido' };
+  if (out.correo && !correoValido(out.correo)) return { error: 'Correo no válido' };
   return { out };
 }
 
@@ -45,7 +60,7 @@ async function login(req, res, body) {
   const recent = (attempts.get(ip) || []).filter((t) => now - t < 60000);
   if (recent.length >= 10) return send(res, 429, { error: 'Demasiados intentos. Intente de nuevo en un minuto.' });
   attempts.set(ip, [...recent, now]);
-  const q = await query('SELECT u.id_usuario, u.nombre, u.contrasena_cifrada, u.estado, r.nombre AS rol FROM usuarios u JOIN roles r ON r.id_rol=u.id_rol WHERE u.correo=$1', [String(body.correo || '').trim().toLowerCase()]);
+  const q = await query('SELECT u.id_usuario, u.nombre, u.contrasena_cifrada, u.estado, r.nombre AS rol FROM usuarios u JOIN roles r ON r.id_rol=u.id_rol WHERE lower(u.usuario)=$1 OR lower(u.correo)=$1 ORDER BY (lower(u.usuario)=$1) DESC LIMIT 1', [String(body.usuario ?? body.correo ?? '').trim().toLowerCase()]);
   const u = q.rows[0];
   if (!u || !u.estado || !auth.verify(String(body.password || ''), u.contrasena_cifrada)) return send(res, 401, { error: 'Credenciales no válidas' });
   await audit({ sub: u.id_usuario }, 'LOGIN', 'usuarios');
@@ -78,6 +93,10 @@ async function crud(req, res, r, id, user, body, sp) {
       data.contrasena_cifrada = auth.hash(String(body.password));
     }
     if (data.correo) data.correo = data.correo.toLowerCase();
+    if (data.usuario !== undefined) {
+      data.usuario = String(data.usuario).trim().toLowerCase();
+      if (!/^[a-z0-9._-]{3,30}$/.test(data.usuario)) return send(res, 400, { error: 'El usuario debe tener de 3 a 30 caracteres: letras, números, punto, guion o guion bajo' });
+    }
   }
   if (r.t === 'reservas') {
     let cur = data;
@@ -107,12 +126,12 @@ async function crud(req, res, r, id, user, body, sp) {
 module.exports = async function handler(req, res) {
   try {
     const url = new URL(req.url, 'http://localhost');
-    const route = (url.searchParams.get('p') ?? url.pathname.replace(/^\/api\/?/, '')).replace(/^\/+|\/+$/g, '');
+    const route = recortarBarras(url.searchParams.get('p') ?? (url.pathname.startsWith('/api') ? url.pathname.slice(4) : url.pathname));
     const [name, rawId, sub, sub2] = route.split('/');
     if (name === 'health') {
       try { return send(res, 200, { ok: true, db: await mode() }); } catch (e) {
         console.error('health:', e.message);
-        return send(res, 503, { ok: false, db: 'error', codigo: e.code || null, detalle: String(e.message).replace(/\w+:\/\/\S+/g, '[url]').slice(0, 160) });
+        return send(res, 503, { ok: false, db: 'error', codigo: e.code || null, detalle: String(e.message).split(/\s+/).map((w) => (w.includes('://') ? '[url]' : w)).join(' ').slice(0, 160) });
       }
     }
     if (name === 'login' && req.method === 'POST') return await login(req, res, await readJson(req));

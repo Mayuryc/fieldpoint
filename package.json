@@ -1,7 +1,7 @@
 {
   "name": "fieldpoint",
   "version": "1.0.0",
-  "description": "FieldPoint - sistema de gesti\u00f3n para cancha sint\u00e9tica (Fase 3)",
+  "description": "FieldPoint - sistema de gestión para cancha sintética (Fase 3)",
   "main": "desktop/main.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,7 @@
     "test:selenium": "node --test tests/selenium/crud.test.js",
     "lint": "eslint .",
     "desktop": "electron .",
-    "dist": "electron-builder --win nsis",
+    "dist": "electron-builder --win --x64 --publish never",
     "dist:dir": "electron-builder --win --dir",
     "backup": "node scripts/backup.js"
   },
@@ -37,6 +37,7 @@
     "appId": "co.fieldpoint.app",
     "productName": "FieldPoint",
     "directories": {
+      "buildResources": "build",
       "output": "dist"
     },
     "files": [
@@ -53,9 +54,20 @@
     ],
     "win": {
       "target": [
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
-      "icon": "public/assets/icon.png"
+      "icon": "build/icon.png"
     },
     "nsis": {
       "oneClick": true,

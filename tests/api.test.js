@@ -109,12 +109,12 @@ test('integridad referencial: no se elimina lo que tiene registros relacionados'
   assert.equal((await call('POST', '/api/reservas', admin, { id_cancha: 999, id_cliente: 1, fecha: '2026-11-01', hora_inicio: '10:00', hora_fin: '11:00' })).s, 409);
 });
 test('usuarios: hash scrypt, sin exponer la contraseña, correo único y desactivación', async () => {
-  assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'N', correo: 'n@fp.co', id_rol: 2, password: 'corta' })).s, 400);
-  const c = await call('POST', '/api/usuarios', admin, { nombre: 'Nuevo', correo: 'Nuevo@FP.co', id_rol: 2, password: 'ClaveSegura1' });
-  assert.equal(c.s, 201); assert.equal('contrasena_cifrada' in c.j, false); assert.equal(c.j.correo, 'nuevo@fp.co');
+  assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'N', usuario: 'enene', correo: 'n@fp.co', id_rol: 2, password: 'corta' })).s, 400);
+  const c = await call('POST', '/api/usuarios', admin, { nombre: 'Nuevo', usuario: 'Nuevo.Op', correo: 'Nuevo@FP.co', id_rol: 2, password: 'ClaveSegura1' });
+  assert.equal(c.s, 201); assert.equal('contrasena_cifrada' in c.j, false); assert.equal(c.j.correo, 'nuevo@fp.co'); assert.equal(c.j.usuario, 'nuevo.op');
   const guardado = (await db.query('SELECT contrasena_cifrada FROM usuarios WHERE id_usuario=$1', [c.j.id_usuario])).rows[0].contrasena_cifrada;
   assert.match(guardado, /^scrypt\$\d+\$[0-9a-f]{32}\$[0-9a-f]{128}$/); assert.ok(!guardado.includes('ClaveSegura1'));
-  assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'Dup', correo: 'nuevo@fp.co', id_rol: 2, password: 'ClaveSegura1' })).s, 409);
+  assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'Dup', usuario: 'otro.op', correo: 'nuevo@fp.co', id_rol: 2, password: 'ClaveSegura1' })).s, 409);
   assert.equal((await login('nuevo@fp.co', 'ClaveSegura1')).s, 200);
   await call('PUT', '/api/usuarios/' + c.j.id_usuario, admin, { estado: false });
   assert.equal((await login('nuevo@fp.co', 'ClaveSegura1')).s, 401);
@@ -140,6 +140,33 @@ test('el servidor estático sirve la aplicación y bloquea rutas fuera de /publi
   const r = await fetch(base + '/'); assert.equal(r.status, 200); assert.match(await r.text(), /FieldPoint/);
   assert.equal((await fetch(base + '/..%2fpackage.json')).status, 404);
   assert.equal((await fetch(base + '/no-existe.html')).status, 404);
+});
+test('inicio de sesión por usuario (también acepta el correo) y formato del usuario', async () => {
+  const por = async (u) => (await call('POST', '/api/login', null, { usuario: u, password: 'FieldPoint2026*' }, { 'x-forwarded-for': '10.1.1.1' })).s;
+  assert.equal(await por('admin'), 200); assert.equal(await por('ADMIN'), 200); assert.equal(await por('admin@fieldpoint.co'), 200); assert.equal(await por('operador'), 200); assert.equal(await por('noexiste'), 401);
+  assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'Sin usuario', id_rol: 2, password: 'ClaveSegura1' })).s, 400);
+  assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'Malo', usuario: 'a b', id_rol: 2, password: 'ClaveSegura1' })).s, 400);
+  const c = await call('POST', '/api/usuarios', admin, { nombre: 'Sin correo', usuario: 'sin.correo', id_rol: 2, password: 'ClaveSegura1' });
+  assert.equal(c.s, 201); assert.equal(c.j.correo, null);
+  assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'Repetido', usuario: 'SIN.CORREO', id_rol: 2, password: 'ClaveSegura1' })).s, 409);
+});
+test('usuarios: editar, eliminar sin historial, desactivar con historial y proteger al administrador', async () => {
+  const c = await call('POST', '/api/usuarios', admin, { nombre: 'Temporal', usuario: 'temporal', id_rol: 2, password: 'ClaveSegura1' });
+  const e = await call('PUT', '/api/usuarios/' + c.j.id_usuario, admin, { nombre: 'Temporal Editado', usuario: 'temporal', id_rol: 2, estado: true });
+  assert.equal(e.s, 200); assert.equal(e.j.nombre, 'Temporal Editado');
+  const p = await call('PUT', '/api/usuarios/' + c.j.id_usuario, admin, { password: 'OtraClave123' }); assert.equal(p.s, 200);
+  assert.equal((await call('POST', '/api/login', null, { usuario: 'temporal', password: 'OtraClave123' }, { 'x-forwarded-for': '10.1.1.2' })).s, 200);
+  const d = await call('DELETE', '/api/usuarios/' + c.j.id_usuario, admin);
+  assert.equal(d.s, 200); assert.equal(d.j.desactivado, true); assert.match(d.j.mensaje, /se desactiv/);
+  assert.equal((await call('POST', '/api/login', null, { usuario: 'temporal', password: 'OtraClave123' }, { 'x-forwarded-for': '10.1.1.2' })).s, 401);
+  const s = await call('POST', '/api/usuarios', admin, { nombre: 'Sin historial', usuario: 'sinhistorial', id_rol: 2, password: 'ClaveSegura1' });
+  assert.equal((await call('DELETE', '/api/usuarios/' + s.j.id_usuario, admin)).j.desactivado, undefined);
+  assert.equal((await call('GET', '/api/usuarios/' + s.j.id_usuario, admin)).s, 404);
+  assert.equal((await call('DELETE', '/api/usuarios/1', admin)).s, 409);
+  assert.equal((await call('PUT', '/api/usuarios/1', admin, { estado: false })).s, 409);
+  assert.equal((await call('PUT', '/api/usuarios/1', admin, { id_rol: 2 })).s, 409);
+  assert.equal((await call('DELETE', '/api/usuarios/2', oper)).s, 403);
+  assert.equal((await call('DELETE', '/api/usuarios/9999', admin)).s, 404);
 });
 test('límite de intentos de inicio de sesión (429)', async () => {
   let ultimo = 0;

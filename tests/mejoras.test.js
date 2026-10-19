@@ -101,8 +101,9 @@ test('reportes semanal y mensual: rangos, permisos y exportación PDF y Excel', 
   const pdf = await call('GET', '/api/reportes/semanal?formato=pdf', admin); assert.equal(pdf.j.subarray(0, 4).toString(), '%PDF');
   const x = await call('GET', '/api/reportes/mensual?formato=xlsx', admin); assert.equal(x.s, 200);
   const wb = new ExcelJS.Workbook(); await wb.xlsx.load(x.j);
-  assert.deepEqual(wb.worksheets.map((w) => w.name), ['Resumen', 'Por tipo', 'Por cancha', 'Por mesa', 'Consumos', 'Métodos de pago', 'Por día']);
-  assert.equal(wb.getWorksheet('Resumen').getRow(4).getCell(1).value, 'Ventas totales');
+  assert.deepEqual(wb.worksheets.map((w) => w.name), ['Resumen', 'Comprobantes', 'Consumos', 'Por día']);
+  assert.equal(wb.getWorksheet('Resumen').getRow(7).getCell(1).value, 'Ventas totales');
+  assert.equal(wb.getWorksheet('Comprobantes').getRow(6).getCell(8).value, 'Total');
   assert.equal((await call('GET', '/api/reportes/diario?formato=pdf', oper)).s, 200);
   assert.equal((await call('GET', '/api/reportes/diario?formato=xlsx', oper)).s, 200);
 });
@@ -190,4 +191,11 @@ test('licencia única firmada: activación, bloqueo sin licencia y rechazo de li
     assert.equal((await call('GET', '/api/productos', admin)).s, 200);
     assert.equal((await call('GET', '/api/licencia', oper)).j.negocio, 'Cancha Sintética Fútbol 10');
   } finally { delete process.env.LICENSE_PUBLIC_KEY; delete process.env.REQUIRE_LICENSE; }
+});
+test('numeración consecutiva sin repetirse con 25 cobros simultáneos', async () => {
+  const cobros = await Promise.all(Array.from({ length: 25 }, () => call('POST', '/api/comprobantes', admin, { metodo: 'Efectivo', items: [{ tipo: 'otro', descripcion: 'Cobro simultáneo', precio_unitario: 1000, cantidad: 1 }] })));
+  assert.ok(cobros.every((c) => c.s === 201), 'todos los cobros se registran: ' + cobros.map((c) => c.s).join(','));
+  const numeros = cobros.map((c) => Number(c.j.numero)).sort((a, b) => a - b);
+  assert.equal(new Set(numeros).size, 25, 'ningún número se repite');
+  assert.equal(numeros[24] - numeros[0], 24, 'la numeración es consecutiva');
 });

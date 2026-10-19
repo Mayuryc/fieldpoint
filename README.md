@@ -25,10 +25,10 @@ Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la
 ```bash
 npm install
 npm start               # http://localhost:3000 (sin DATABASE_URL usa PostgreSQL embebido en memoria: modo demo)
-npm test                # 47 pruebas de la API
+npm test                # 50 pruebas de la API
 npm run test:coverage   # genera coverage/lcov.info para SonarQube
 npm run lint
-python3 tests/ui_check_playwright.py http://localhost:3000 capturas   # verificación de interfaz (42 casos)
+python3 tests/ui_check_playwright.py http://localhost:3000 capturas   # verificación de interfaz (45 casos)
 ```
 Usuarios iniciales: `admin@fieldpoint.co` (Administrador) y `operador@fieldpoint.co` (Operador). Contraseña inicial: `SEED_PASSWORD` (por defecto `FieldPoint2026*`; cámbiela).
 
@@ -72,3 +72,9 @@ Un solo archivo, `public/theme.css`, define la identidad del manual para todas l
 - Consumos: producto + cliente (por defecto el de la mesa) + cantidad; se acumulan en la cuenta. El stock se reserva entre las mesas abiertas y se descuenta al cerrar.
 - Marcar libre solo si no hay consumos. Cerrar genera el comprobante (tirilla o factura), conserva el precio registrado y deja la mesa libre.
 - Eliminar una mesa solo es posible si no tiene historial de cuentas.
+
+## Acceso
+El inicio de sesión usa **usuario y contraseña** (también se acepta el correo registrado). Usuarios iniciales: `admin` (Administrador) y `operador` (Operador). Cada usuario tiene un nombre de usuario único (3 a 30 caracteres: letras, números, punto, guion o guion bajo) y el correo es opcional. Un usuario con historial de operaciones no se borra: se desactiva. No se puede eliminar ni desactivar la propia cuenta ni al último administrador activo.
+
+## Pruebas (todas reproducibles)
+`scripts/ejecutar_pruebas.sh` ejecuta la batería completa y guarda los registros en `evidencias/`: API (base embebida y PostgreSQL), ESLint, reglas SonarJS, duplicación y dependencias, interfaz con Playwright, Selenium (`CHROMEDRIVER_PATH` y `CHROME_BIN` si el controlador no está en el PATH), carga y estrés con k6 (`k6/fieldpoint.js`; el plan equivalente para JMeter está en `jmeter/fieldpoint.jmx`) y la aplicación de escritorio.

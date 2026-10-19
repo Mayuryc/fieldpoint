@@ -18,7 +18,7 @@ async function iniciar() {
   const { createServer, iniciarRespaldos } = require('../server');
   const srv = createServer().listen(0, '127.0.0.1', async () => {
     iniciarRespaldos();
-    const win = new BrowserWindow({ width: 1280, height: 800, title: 'FieldPoint', icon: path.join(__dirname, '..', 'assets', 'icon.png'), webPreferences: { contextIsolation: true, nodeIntegration: false } });
+    const win = new BrowserWindow({ width: 1280, height: 800, title: 'FieldPoint', icon: path.join(__dirname, '..', 'public', 'assets', 'icon.png'), webPreferences: { contextIsolation: true, nodeIntegration: false } });
     win.removeMenu();
     await win.loadURL(`http://127.0.0.1:${srv.address().port}/`);
     if (clave) dialog.showMessageBox(win, { type: 'info', title: 'Primer inicio', message: 'Contraseña inicial de los usuarios', detail: `admin@fieldpoint.co y operador@fieldpoint.co\nContraseña: ${clave}\nCámbiela desde el módulo Usuarios y active su licencia en Negocio y licencia.` });

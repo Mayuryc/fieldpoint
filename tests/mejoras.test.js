@@ -17,7 +17,7 @@ const call = async (method, path, token, body) => {
   return { s: r.status, j, tipo };
 };
 const login = async (c) => (await call('POST', '/api/login', null, { correo: c, password: 'FieldPoint2026*' })).j.token;
-const hoy = new Date().toISOString().slice(0, 10);
+const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
 const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 const ejemplo = { metodo: 'Transferencia', cliente_nombre: 'Juan Pérez', items: [{ tipo: 'cancha', id_cancha: 1, cantidad: 1 }, { tipo: 'mesa', descripcion: 'Mesa 3', precio_unitario: 10000, cantidad: 1 }, { tipo: 'consumo', id_producto: 1, cantidad: 2 }, { tipo: 'consumo', id_producto: 7, cantidad: 1 }] };
 

@@ -1,6 +1,6 @@
 // Plan de carga y estrés de FieldPoint con k6 (equivalente al plan de JMeter jmeter/fieldpoint.jmx).
 // Uso:  k6 run -e BASE_URL=https://<proyecto>.vercel.app -e PERFIL=carga k6/fieldpoint.js
-//       PERFIL = humo | carga (50 usuarios) | estres (hasta 300 usuarios)
+//       PERFIL = humo | carga (50 usuarios) | rubrica (250 usuarios) | estres (hasta 300 usuarios)
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
 
@@ -12,6 +12,7 @@ const PERFIL = __ENV.PERFIL || 'humo';
 const PERFILES = {
   humo: { stages: [{ duration: '10s', target: 5 }, { duration: '10s', target: 5 }, { duration: '5s', target: 0 }] },
   carga: { stages: [{ duration: '30s', target: 50 }, { duration: '120s', target: 50 }, { duration: '15s', target: 0 }] },
+  rubrica: { stages: [{ duration: '40s', target: 250 }, { duration: '120s', target: 250 }, { duration: '20s', target: 0 }] },
   estres: { stages: [{ duration: '40s', target: 100 }, { duration: '40s', target: 200 }, { duration: '40s', target: 300 }, { duration: '60s', target: 300 }, { duration: '20s', target: 0 }] },
 };
 export const options = {

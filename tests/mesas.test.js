@@ -126,7 +126,7 @@ test('cerrar una mesa sin consumos se rechaza y mantiene el precio registrado', 
   assert.equal(Number(r.j.total), 10000, 'se cobra el precio con el que se registró el consumo'); assert.equal(r.j.cliente_nombre, 'Mesa 3');
 });
 test('el reporte incluye las ventas por mesa cerrada y la auditoría registra las acciones', async () => {
-  const hoy = new Date().toISOString().slice(0, 10);
+  const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
   const rep = (await call('GET', '/api/reportes/diario?fecha=' + hoy, admin)).j;
   assert.equal(rep.porMesa.find((x) => x.nombre === 'Mesa 1').total, 32000); assert.equal(rep.porMesa.find((x) => x.nombre === 'Mesa 3').total, 10000);
   const a = (await call('GET', '/api/auditoria?limit=200', admin)).j.data.map((x) => x.accion);

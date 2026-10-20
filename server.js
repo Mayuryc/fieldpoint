@@ -6,10 +6,14 @@ const handler = require('./api/index');
 const backup = require('./lib/backup');
 
 const PUB = path.join(__dirname, 'public');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.png': 'image/png', '.ttf': 'font/ttf', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.png': 'image/png', '.ttf': 'font/ttf', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.mp4': 'video/mp4', '.jpg': 'image/jpeg' };
 
 function createServer() {
   return http.createServer((req, res) => {
+    // Mismas cabeceras de seguridad que envía Vercel en producción (vercel.json)
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'no-referrer');
     if (req.url.startsWith('/api')) return handler(req, res);
     const rel = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     const file = path.normalize(path.join(PUB, rel === '/' ? 'index.html' : rel));

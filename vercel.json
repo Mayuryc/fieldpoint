@@ -36,5 +36,12 @@
       "includeFiles": "{schema.sql,public/assets/**,public/fonts/**,lib/license-public.pem,node_modules/pdfkit/js/data/**,node_modules/pdfkit/js/standard-fonts/**}",
       "maxDuration": 30
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/pitch.html",
+      "permanent": false
+    }
+  ]
 }

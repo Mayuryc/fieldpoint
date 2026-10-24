@@ -14,6 +14,7 @@ function createServer() {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
     if (req.url.startsWith('/api')) return handler(req, res);
     const rel = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     const file = path.normalize(path.join(PUB, rel === '/' ? 'index.html' : rel));
@@ -32,5 +33,5 @@ function iniciarRespaldos() {
   return setInterval(hacer, 60 * 60 * 1000);
 }
 
-if (require.main === module) createServer().listen(process.env.PORT || 3000, () => { iniciarRespaldos(); console.log('FieldPoint en http://localhost:' + (process.env.PORT || 3000)); });
+if (require.main === module) createServer().listen(process.env.PORT || 3000, () => { iniciarRespaldos(); console.log('Tablero en http://localhost:' + (process.env.PORT || 3000)); });
 module.exports = { createServer, iniciarRespaldos };

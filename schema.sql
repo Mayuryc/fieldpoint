@@ -28,3 +28,6 @@ ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS usuario VARCHAR(50);
 ALTER TABLE usuarios ALTER COLUMN correo DROP NOT NULL;
 UPDATE usuarios u SET usuario = CASE WHEN (SELECT COUNT(*) FROM usuarios x WHERE split_part(x.correo,'@',1)=split_part(u.correo,'@',1) AND x.id_usuario<u.id_usuario)=0 THEN split_part(u.correo,'@',1) ELSE split_part(u.correo,'@',1) || u.id_usuario END WHERE usuario IS NULL OR usuario='';
 CREATE UNIQUE INDEX IF NOT EXISTS usuarios_usuario_uq ON usuarios (lower(usuario));
+ALTER TABLE clientes ADD COLUMN IF NOT EXISTS autorizacion_datos BOOLEAN DEFAULT false;
+ALTER TABLE clientes ADD COLUMN IF NOT EXISTS fecha_autorizacion TIMESTAMP;
+ALTER TABLE clientes ADD COLUMN IF NOT EXISTS anonimizado BOOLEAN DEFAULT false;

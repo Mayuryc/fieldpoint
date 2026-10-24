@@ -12,13 +12,13 @@ const call = async (method, path, token, body) => {
   const tipo = r.headers.get('content-type') || '';
   return { s: r.status, j: tipo.includes('json') ? await r.json() : Buffer.from(await r.arrayBuffer()) };
 };
-const login = async (c) => (await call('POST', '/api/login', null, { correo: c, password: 'FieldPoint2026*' })).j.token;
+const login = async (c) => (await call('POST', '/api/login', null, { correo: c, password: 'Tablero2026*' })).j.token;
 const mesa = async (n) => (await call('GET', '/api/mesas/tablero', admin)).j.data.find((m) => m.numero === n);
 const stock = async (id) => Number((await call('GET', '/api/productos/' + id, admin)).j.stock_actual);
 
 before(async () => {
   db.reset(); server = createServer().listen(0); await new Promise((r) => server.once('listening', r));
-  base = 'http://localhost:' + server.address().port; admin = await login('admin@fieldpoint.co'); oper = await login('operador@fieldpoint.co');
+  base = 'http://localhost:' + server.address().port; admin = await login('admin@tablero.test'); oper = await login('operador@tablero.test');
 });
 after(() => server.close());
 

@@ -6,7 +6,7 @@ const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000';
-const PASS = process.env.FP_PASSWORD || 'FieldPoint2026*';
+const PASS = process.env.FP_PASSWORD || 'Tablero2026*';
 let d;
 const q = (id) => By.css(`[data-testid="${id}"]`);
 const wait = (loc) => d.wait(until.elementLocated(loc), 10000);

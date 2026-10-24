@@ -16,14 +16,14 @@ const call = async (method, path, token, body) => {
   const j = tipo.includes('json') ? await r.json() : Buffer.from(await r.arrayBuffer());
   return { s: r.status, j, tipo };
 };
-const login = async (c) => (await call('POST', '/api/login', null, { correo: c, password: 'FieldPoint2026*' })).j.token;
+const login = async (c) => (await call('POST', '/api/login', null, { correo: c, password: 'Tablero2026*' })).j.token;
 const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
 const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 const ejemplo = { metodo: 'Transferencia', cliente_nombre: 'Juan Pérez', items: [{ tipo: 'cancha', id_cancha: 1, cantidad: 1 }, { tipo: 'mesa', descripcion: 'Mesa 3', precio_unitario: 10000, cantidad: 1 }, { tipo: 'consumo', id_producto: 1, cantidad: 2 }, { tipo: 'consumo', id_producto: 7, cantidad: 1 }] };
 
 before(async () => {
   db.reset(); server = createServer().listen(0); await new Promise((r) => server.once('listening', r));
-  base = 'http://localhost:' + server.address().port; admin = await login('admin@fieldpoint.co'); oper = await login('operador@fieldpoint.co');
+  base = 'http://localhost:' + server.address().port; admin = await login('admin@tablero.test'); oper = await login('operador@tablero.test');
 });
 after(() => server.close());
 
@@ -162,7 +162,7 @@ test('auditoría: quién, cuándo y qué acción; solo el administrador la consu
 test('respaldo y restauración de la base de datos', async () => {
   assert.equal((await call('GET', '/api/respaldo', oper)).s, 403);
   const r = await call('GET', '/api/respaldo', admin); const dump = r.j;
-  assert.equal(dump.app, 'FieldPoint'); assert.ok(Object.keys(dump.tablas).length >= 22); assert.ok(dump.tablas.comprobantes.length >= 3);
+  assert.equal(dump.app, 'Tablero'); assert.ok(Object.keys(dump.tablas).length >= 22); assert.ok(dump.tablas.comprobantes.length >= 3);
   const precio = dump.tablas.productos.find((p) => p.id_producto === 1).precio_venta;
   await call('PUT', '/api/productos/1', admin, { precio_venta: 99999 });
   await backup.restaurar(dump);

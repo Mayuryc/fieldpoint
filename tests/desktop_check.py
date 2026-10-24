@@ -46,8 +46,8 @@ with sync_playwright() as pw:
     ok('ED4 Se guarda un producto en la base local', 'Producto de escritorio' in pg.inner_text(T('tabla'))); pg.screenshot(path=SALIDA + '/ed_app.png')
     b.close()
 cerrar()
-datos = os.path.expanduser('~/.config/fieldpoint')
-ok('ED5 Se crean la carpeta de datos y el respaldo diario', os.path.isdir(datos + '/datos') and any(f.startswith('fieldpoint_') for f in os.listdir(datos + '/respaldos')))
+datos = os.path.expanduser('~/.config/tablero')
+ok('ED5 Se crean la carpeta de datos y el respaldo diario', os.path.isdir(datos + '/datos') and any(f.startswith('tablero_') for f in os.listdir(datos + '/respaldos')))
 p = lanzar()
 with sync_playwright() as pw:
     b = pw.chromium.connect_over_cdp('http://127.0.0.1:9444'); pg = b.contexts[0].pages[0]

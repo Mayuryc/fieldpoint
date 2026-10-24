@@ -1,6 +1,6 @@
-# FieldPoint · Fase 3: producto instalable y salida al mercado
+# Tablero · gestión para negocios (primera mini app: canchas y servicios)
 
-Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la nube (Vercel + PostgreSQL)** y como **aplicación de escritorio (Electron + PostgreSQL embebido)**, con la identidad visual del manual de FieldPoint.
+Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la nube (Vercel + PostgreSQL)** y como **aplicación de escritorio (Electron + PostgreSQL embebido)**, con la identidad visual del manual de Tablero.
 
 ## Funciones
 | Módulo | Qué hace |
@@ -19,7 +19,7 @@ Sistema de gestión para canchas sintéticas, mesas y consumos. Funciona en **la
 | Seguridad | scrypt, JWT, autorización por rol, límite de intentos, cabeceras HTTP |
 
 ## Estructura
-`api/index.js` (API) · `lib/` (módulos) · `public/index.html` + `public/app.js` (aplicación web) · `public/theme.css` (tema global con la identidad visual) · `public/assets` y `public/fonts` (logo y tipografías) · `public/prototipo.html` (prototipo de la Fase 2) · `schema.sql` (23 tablas) · `desktop/main.js` (Electron) · `installer/` (NSIS e Inno Setup) · `scripts/` (respaldo, restauración y licencias) · `tests/` (API, Selenium y Playwright) · `jmeter/fieldpoint.jmx` · `sonar-project.properties`
+`api/index.js` (API) · `lib/` (módulos) · `public/index.html` + `public/app.js` (aplicación web) · `public/theme.css` (tema global con la identidad visual) · `public/assets` y `public/fonts` (logo y tipografías) · `public/prototipo.html` (prototipo de la Fase 2) · `schema.sql` (23 tablas) · `desktop/main.js` (Electron) · `installer/` (NSIS e Inno Setup) · `scripts/` (respaldo, restauración y licencias) · `tests/` (API, Selenium y Playwright) · `jmeter/tablero.jmx` · `sonar-project.properties`
 
 ## Ejecutar en local
 ```bash
@@ -30,7 +30,7 @@ npm run test:coverage   # genera coverage/lcov.info para SonarQube
 npm run lint
 python3 tests/ui_check_playwright.py http://localhost:3000 capturas   # verificación de interfaz (45 casos)
 ```
-Usuarios iniciales: `admin@fieldpoint.co` (Administrador) y `operador@fieldpoint.co` (Operador). Contraseña inicial: `SEED_PASSWORD` (por defecto `FieldPoint2026*`; cámbiela).
+Usuarios iniciales: `admin@tablero.test` (Administrador) y `operador@tablero.test` (Operador). Contraseña inicial: `SEED_PASSWORD` (por defecto `Tablero2026*`; cámbiela).
 
 ## Variables de entorno
 | Variable | Uso |
@@ -50,7 +50,7 @@ Usuarios iniciales: `admin@fieldpoint.co` (Administrador) y `operador@fieldpoint
 3. Despliegue y verifique `https://<proyecto>.vercel.app/api/health` → `{"ok":true,"db":"postgres"}`.
 
 ## Aplicación de escritorio e instalador (Windows)
-Ver `installer/LEEME.md`. `npm run desktop` abre la aplicación; `npm run dist` genera el instalador NSIS de un clic (en Windows) y `installer/fieldpoint.iss` el de Inno Setup.
+Ver `installer/LEEME.md`. `npm run desktop` abre la aplicación; `npm run dist` genera el instalador NSIS de un clic (en Windows) y `installer/tablero.iss` el de Inno Setup.
 
 ## Licencias (lado del vendedor)
 ```bash
@@ -62,7 +62,7 @@ node scripts/generar-licencia.js licencia-privada.pem "Negocio" "NIT" [id-del-eq
 ## Pruebas de calidad y carga
 - **SonarQube**: `npm run test:coverage` y `sonar-scanner -Dsonar.host.url=<servidor> -Dsonar.token=<token>`.
 - **Selenium**: `BASE_URL=https://<proyecto>.vercel.app npm run test:selenium` (Chrome y chromedriver).
-- **JMeter 5.x**: `jmeter -n -t jmeter/fieldpoint.jmx -Jhost=<proyecto>.vercel.app -Jport=443 -Jprotocol=https -Jusers=50 -Jramp=60 -Jduration=300 -l resultados.jtl -e -o informe/`
+- **JMeter 5.x**: `jmeter -n -t jmeter/tablero.jmx -Jhost=<proyecto>.vercel.app -Jport=443 -Jprotocol=https -Jusers=50 -Jramp=60 -Jduration=300 -l resultados.jtl -e -o informe/`
 
 ## Tema visual (theme.css)
 Un solo archivo, `public/theme.css`, define la identidad del manual para todas las pantallas: variables de color (`--navy`, `--org`, `--ok`, `--err`…), tipografías Montserrat y Open Sans incluidas en `public/fonts` (funciona sin internet), barra lateral en escritorio y navegación inferior en móvil, íconos de línea de un solo estilo, botones con transiciones suaves, mensajes de validación corporativos y modo oscuro. Respeta `prefers-reduced-motion`. Para cambiar la apariencia basta editar las variables del bloque `:root`.
@@ -77,4 +77,4 @@ Un solo archivo, `public/theme.css`, define la identidad del manual para todas l
 El inicio de sesión usa **usuario y contraseña** (también se acepta el correo registrado). Usuarios iniciales: `admin` (Administrador) y `operador` (Operador). Cada usuario tiene un nombre de usuario único (3 a 30 caracteres: letras, números, punto, guion o guion bajo) y el correo es opcional. Un usuario con historial de operaciones no se borra: se desactiva. No se puede eliminar ni desactivar la propia cuenta ni al último administrador activo.
 
 ## Pruebas (todas reproducibles)
-`scripts/ejecutar_pruebas.sh` ejecuta la batería completa y guarda los registros en `evidencias/`: API (base embebida y PostgreSQL), ESLint, reglas SonarJS, duplicación y dependencias, interfaz con Playwright, Selenium (`CHROMEDRIVER_PATH` y `CHROME_BIN` si el controlador no está en el PATH), carga y estrés con k6 (`k6/fieldpoint.js`; el plan equivalente para JMeter está en `jmeter/fieldpoint.jmx`) y la aplicación de escritorio.
+`scripts/ejecutar_pruebas.sh` ejecuta la batería completa y guarda los registros en `evidencias/`: API (base embebida y PostgreSQL), ESLint, reglas SonarJS, duplicación y dependencias, interfaz con Playwright, Selenium (`CHROMEDRIVER_PATH` y `CHROME_BIN` si el controlador no está en el PATH), carga y estrés con k6 (`k6/tablero.js`; el plan equivalente para JMeter está en `jmeter/tablero.jmx`) y la aplicación de escritorio.

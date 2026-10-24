@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Ejecuta la batería de pruebas de FieldPoint y guarda los registros en ./evidencias
+# Ejecuta la batería de pruebas de Tablero y guarda los registros en ./evidencias
 # Requisitos: Node 20+, PostgreSQL (opcional, para las pruebas con base real), Python con playwright, k6 (opcional).
-# Variables opcionales: PGURL (por ejemplo postgres://fp:fp@localhost:5432/fieldpoint), CHROMEDRIVER_PATH, CHROME_BIN
+# Variables opcionales: PGURL (por ejemplo postgres://fp:fp@localhost:5432/tablero), CHROMEDRIVER_PATH, CHROME_BIN
 set -u
 cd "$(dirname "$0")/.."
 OUT=evidencias; mkdir -p "$OUT/capturas" coverage
@@ -29,8 +29,8 @@ BASE_URL=http://localhost:${PORT:-3000} node --test tests/selenium/crud.test.js 
 
 if command -v k6 >/dev/null; then
   echo "== 6. Carga (50 usuarios)"
-  k6 run -e BASE_URL=http://localhost:${PORT:-3000} -e PERFIL=carga --summary-export="$OUT/09_k6_carga_resumen.json" k6/fieldpoint.js > "$OUT/09_k6_carga.log" 2>&1
+  k6 run -e BASE_URL=http://localhost:${PORT:-3000} -e PERFIL=carga --summary-export="$OUT/09_k6_carga_resumen.json" k6/tablero.js > "$OUT/09_k6_carga.log" 2>&1
   echo "== 7. Estrés (hasta 300 usuarios)"
-  k6 run -e BASE_URL=http://localhost:${PORT:-3000} -e PERFIL=estres --summary-export="$OUT/10_k6_estres_resumen.json" k6/fieldpoint.js > "$OUT/10_k6_estres.log" 2>&1
+  k6 run -e BASE_URL=http://localhost:${PORT:-3000} -e PERFIL=estres --summary-export="$OUT/10_k6_estres_resumen.json" k6/tablero.js > "$OUT/10_k6_estres.log" 2>&1
 fi
 echo "Listo: registros en $OUT/"

@@ -1,5 +1,5 @@
 'use strict';
-/* FieldPoint · aplicación web. Solo presentación: la lógica de negocio y la seguridad están en la API. */
+/* Tablero · aplicación web. Solo presentación: la lógica de negocio y la seguridad están en la API. */
 const $ = (s) => document.querySelector(s);
 let TOKEN = sessionStorage.getItem('t'); let USER = JSON.parse(sessionStorage.getItem('u') || 'null');
 let CUR = 'inicio'; let ROWS = []; let VTOK = 0;
@@ -29,7 +29,7 @@ const SOLO_ADMIN = ['usuarios', 'auditoria', 'negocio'];
 const T = (l, n, t = 'text', x = {}) => ({ n, l, t, ...x });
 const CFG = {
   productos: { pk: 'id_producto', f: [T('Nombre', 'nombre'), T('Categoría', 'id_categoria', 'ref', { r: 'categorias' }), T('Precio de venta', 'precio_venta', 'number'), T('Costo', 'costo', 'number'), T('Stock actual', 'stock_actual', 'number'), T('Stock mínimo', 'stock_minimo', 'number'), T('Activo', 'estado', 'checkbox')] },
-  clientes: { pk: 'id_cliente', f: [T('Nombre', 'nombre'), T('Teléfono', 'telefono'), T('Correo', 'correo', 'email')] },
+  clientes: { pk: 'id_cliente', f: [T('Nombre', 'nombre'), T('Teléfono', 'telefono'), T('Correo', 'correo', 'email'), T('Autoriza tratamiento de datos', 'autorizacion_datos', 'checkbox', { sin: 1 })] },
   reservas: { pk: 'id_reserva', f: [T('Cancha', 'id_cancha', 'ref', { r: 'canchas' }), T('Cliente', 'id_cliente', 'ref', { r: 'clientes' }), T('Fecha', 'fecha', 'date'), T('Hora inicio', 'hora_inicio', 'time'), T('Hora fin', 'hora_fin', 'time'), T('Estado', 'estado', 'sel', { o: ['Reservada', 'En uso', 'Cancelada'] }), T('Valor', 'valor', 'number')] },
   promociones: { pk: 'id_promocion', f: [T('Nombre', 'nombre'), T('Tipo', 'tipo', 'sel', { o: ['Porcentaje', 'Valor'] }), T('Valor', 'valor', 'number'), T('Desde', 'fecha_inicio', 'date'), T('Hasta', 'fecha_fin', 'date'), T('Activa', 'estado', 'checkbox')] },
   canchas: { pk: 'id_cancha', f: [T('Nombre', 'nombre'), T('Tarifa por hora', 'tarifa_hora', 'number'), T('Estado', 'estado')] },
@@ -90,10 +90,10 @@ async auditoria(){const _t=VTOK;const j=await api('GET','auditoria?limit=100');i
 async negocio(){const _t=VTOK;const [n,l]=await Promise.all([api('GET','negocio'),api('GET','licencia')]);if(_t!==VTOK)return;V(`<div class="r2"><form class="card" id="nf"><h2 style="margin:0">Datos del negocio (tirillas y facturas)</h2><label for="nn">Nombre</label><input id="nn" value="${esc(n.nombre)}" data-testid="n-nombre"><label for="ni">NIT</label><input id="ni" value="${esc(n.nit)}" data-testid="n-nit"><label for="nd">Dirección</label><input id="nd" value="${esc(n.direccion)}"><label for="nt">Teléfono</label><input id="nt" value="${esc(n.telefono)}"><label for="nq">Texto del código QR de pago</label><input id="nq" value="${esc(n.qr_pago)}"><label for="nl">Logo (PNG o JPEG, máx. 300 KB)</label><input id="nl" type="file" accept="image/png,image/jpeg"><div class="row"><button class="btn" data-testid="n-guardar">Guardar</button></div></form>
 <div class="card"><h2 style="margin:0">Licencia del producto</h2><p>Estado: <span class="chip ${l.activa?'':'e'}" data-testid="lic-estado">${l.activa?'Activa · '+esc(l.negocio):'Sin activar'}</span></p><p style="font-size:13px;color:var(--mut)">Identificador del equipo: <b>${esc(l.hardware_id)}</b></p><label for="lc">Clave de licencia</label><textarea id="lc" data-testid="lic-clave" placeholder="Pegue aquí la licencia recibida tras el pago"></textarea><div class="row"><button class="btn" id="la" data-testid="lic-activar">Activar licencia</button></div><h2 style="margin:20px 0 8px">Respaldo de datos</h2><p style="font-size:13px;color:var(--mut)">Descarga una copia completa de la base de datos (solo Administrador).</p><button class="btn o" id="rb" data-testid="respaldo">Descargar respaldo</button></div></div>`);
 $('#nf').onsubmit=async e=>{e.preventDefault();const b={nombre:$('#nn').value,nit:$('#ni').value,direccion:$('#nd').value,telefono:$('#nt').value,qr_pago:$('#nq').value};const f=$('#nl').files[0];if(f){if(f.size>300000)return toast('El logo supera 300 KB',1);b.logo=await new Promise(r=>{const o=new FileReader();o.onload=()=>r(o.result);o.readAsDataURL(f)})}try{await api('PUT','negocio',b);toast('Datos del negocio guardados')}catch(er){toast(er.message,1)}};
-$('#la').onclick=async()=>{try{const r=await api('POST','licencia/activar',{clave:$('#lc').value});toast('Licencia activada: '+r.negocio);VF.negocio()}catch(er){toast(er.message,1)}};$('#rb').onclick=()=>blob('respaldo',`fieldpoint_${hoy()}.json`)}};
+$('#la').onclick=async()=>{try{const r=await api('POST','licencia/activar',{clave:$('#lc').value});toast('Licencia activada: '+r.negocio);VF.negocio()}catch(er){toast(er.message,1)}};$('#rb').onclick=()=>blob('respaldo',`tablero_${hoy()}.json`)}};
 
 async function revisarLicencia(){const l=await api('GET','licencia');if(!l.requerida||l.activa)return true;$('#tabs').innerHTML='';$('#barra').hidden=true;$('#crud').hidden=true;$('#view').hidden=false;
-V(`<div class="card" style="max-width:560px;margin:20px auto"><h2 style="margin:0">Active su licencia de FieldPoint</h2><p>Este equipo necesita la licencia que recibió tras el pago único.</p><p style="font-size:13px;color:var(--mut)">Identificador de este equipo: <b>${esc(l.hardware_id)}</b></p><label for="lc">Clave de licencia</label><textarea id="lc" data-testid="lic-clave"></textarea><div class="row"><button class="btn" id="la" data-testid="lic-activar">Activar licencia</button></div></div>`);
+V(`<div class="card" style="max-width:560px;margin:20px auto"><h2 style="margin:0">Active su licencia de Tablero</h2><p>Este equipo necesita la licencia que recibió tras el pago único.</p><p style="font-size:13px;color:var(--mut)">Identificador de este equipo: <b>${esc(l.hardware_id)}</b></p><label for="lc">Clave de licencia</label><textarea id="lc" data-testid="lic-clave"></textarea><div class="row"><button class="btn" id="la" data-testid="lic-activar">Activar licencia</button></div></div>`);
 $('#la').onclick=async()=>{try{await api('POST','licencia/activar',{clave:$('#lc').value});toast('Licencia activada');start()}catch(e){toast(e.message,1)}};return false}
 
 /* ---- Inicio (dashboard) y Mesas ---- */
@@ -181,7 +181,7 @@ async function list() {
   try {
     const j = await api('GET', CUR + '?limit=100&q=' + encodeURIComponent($('#q').value)); ROWS = j.data;
     $('#th').innerHTML = '<tr>' + ['#', ...c.f.filter((f) => !f.nt).map((f) => f.l), 'Acciones'].map((h) => `<th>${h}</th>`).join('') + '</tr>';
-    $('#tb').innerHTML = ROWS.map((r) => `<tr data-id="${r[c.pk]}"><td>${r[c.pk]}</td>${c.f.filter((f) => !f.nt).map((f) => `<td>${celda(f, r)}</td>`).join('')}<td class="acc">${CUR === 'clientes' ? `<button class="btn sm" data-a="h" data-testid="historial">${ic('history')} Historial</button> ` : ''}<button class="btn sm o" data-a="e" data-testid="editar">${ic('edit')} Editar</button> <button class="btn sm d" data-a="x" data-testid="eliminar">${ic('trash')} Eliminar</button></td></tr>`).join('') || '<tr><td colspan="9" class="vacio">Sin registros</td></tr>';
+    $('#tb').innerHTML = ROWS.map((r) => `<tr data-id="${r[c.pk]}"><td>${r[c.pk]}</td>${c.f.filter((f) => !f.nt).map((f) => `<td>${celda(f, r)}</td>`).join('')}<td class="acc">${CUR === 'clientes' ? `<button class="btn sm" data-a="h" data-testid="historial">${ic('history')} Historial</button> ${USER.rol === 'Administrador' ? `<button class="btn sm o" data-a="ex" data-testid="exportar-titular">Exportar datos</button> <button class="btn sm o" data-a="an" data-testid="anonimizar">Anonimizar</button> ` : ''}` : ''}<button class="btn sm o" data-a="e" data-testid="editar">${ic('edit')} Editar</button> <button class="btn sm d" data-a="x" data-testid="eliminar">${ic('trash')} Eliminar</button></td></tr>`).join('') || '<tr><td colspan="9" class="vacio">Sin registros</td></tr>';
     $('#cnt').textContent = j.total + ' registro(s)';
     if (CUR === 'productos') { const a = await api('GET', 'inventario/alertas'); $('#alerta').innerHTML = a.total ? `<div class="alert" data-testid="alerta-stock">${ic('alert')}<span>Stock bajo: ${a.data.map((p) => esc(p.nombre) + ' (' + p.stock_actual + ')').join(', ')}</span></div>` : ''; } else $('#alerta').innerHTML = '';
   } catch (e) { toast(e.message, 1); }
@@ -199,7 +199,7 @@ async function form(row) {
     const v = row ? row[f.n] : ''; const id = 'f_' + f.n; let i;
     if (f.t === 'ref') { const k = (o) => o[Object.keys(o)[0]]; i = `<select id="${id}" name="${f.n}"><option value="">—</option>${refs[f.n].map((o) => `<option value="${k(o)}" ${k(o) == v ? 'selected' : ''}>${esc(o.nombre || k(o))}</option>`).join('')}</select>`; }
     else if (f.t === 'sel') i = `<select id="${id}" name="${f.n}">${f.o.map((o) => { const [a, b] = Array.isArray(o) ? o : [o, o]; return `<option value="${a}" ${a == v ? 'selected' : ''}>${b}</option>`; }).join('')}</select>`;
-    else if (f.t === 'checkbox') i = `<input id="${id}" name="${f.n}" type="checkbox" ${row ? (v ? 'checked' : '') : 'checked'}>`;
+    else if (f.t === 'checkbox') i = `<input id="${id}" name="${f.n}" type="checkbox" ${row ? (v ? 'checked' : '') : (f.sin ? '' : 'checked')}>`;
     else i = `<input id="${id}" name="${f.n}" type="${f.t}" ${f.t === 'number' ? 'step="any" min="0"' : ''} value="${f.t === 'date' && v ? String(v).slice(0, 10) : f.t === 'password' ? '' : esc(v)}" ${f.nt && row ? 'placeholder="Dejar vacío para no cambiar"' : ''}>`;
     return `<div class="fld ${f.t === 'checkbox' ? 'chk' : ''}"><label for="${id}">${f.l}</label>${i}</div>`;
   };
@@ -240,6 +240,8 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#mo').h
 $('#tb').onclick = async (e) => {
   const b = e.target.closest('button'); if (!b) return; const id = b.closest('tr').dataset.id; const row = ROWS.find((r) => r[CFG[CUR].pk] == id);
   if (b.dataset.a === 'h') return hist(id);
+  if (b.dataset.a === 'ex') return blob(`clientes/${id}/exportar`, `titular_${id}.json`);
+  if (b.dataset.a === 'an') { if (confirm('Se borrarán el nombre, teléfono y correo de este cliente de forma irreversible. Los comprobantes se conservan sin datos personales. ¿Continuar?')) { try { const rr = await api('POST', `clientes/${id}/anonimizar`, {}); toast(rr.mensaje); list(); } catch (er) { toast(er.message, 1); } } return; }
   if (b.dataset.a === 'e') form(row);
   else if (confirm('¿Eliminar este registro?')) { try { const rr = await api('DELETE', CUR + '/' + id); toast(rr.mensaje || 'Registro eliminado'); list(); } catch (er) { toast(er.message, 1); } }
 };

@@ -18,8 +18,8 @@ before(async () => {
   server = createServer().listen(0);
   await new Promise((r) => server.once('listening', r));
   base = 'http://localhost:' + server.address().port;
-  admin = (await login('admin@fieldpoint.co', 'FieldPoint2026*')).j.token;
-  oper = (await login('operador@fieldpoint.co', 'FieldPoint2026*')).j.token;
+  admin = (await login('admin@tablero.test', 'Tablero2026*')).j.token;
+  oper = (await login('operador@tablero.test', 'Tablero2026*')).j.token;
 });
 after(() => server.close());
 
@@ -28,12 +28,12 @@ test('health responde y expone el modo de base de datos', async () => {
   assert.equal(r.s, 200); assert.equal(r.j.ok, true);
 });
 test('login válido devuelve token y rol', async () => {
-  const r = await login('admin@fieldpoint.co', 'FieldPoint2026*');
+  const r = await login('admin@tablero.test', 'Tablero2026*');
   assert.equal(r.s, 200); assert.equal(r.j.usuario.rol, 'Administrador'); assert.ok(r.j.token);
 });
 test('login con contraseña incorrecta o usuario inexistente da 401', async () => {
-  assert.equal((await login('admin@fieldpoint.co', 'incorrecta')).s, 401);
-  assert.equal((await login('nadie@fieldpoint.co', 'FieldPoint2026*')).s, 401);
+  assert.equal((await login('admin@tablero.test', 'incorrecta')).s, 401);
+  assert.equal((await login('nadie@tablero.test', 'Tablero2026*')).s, 401);
   assert.equal((await call('POST', '/api/login', null, {})).s, 401);
 });
 test('las cabeceras de seguridad están presentes y no se cachea', async () => {
@@ -137,13 +137,13 @@ test('las escrituras quedan registradas en la auditoría', async () => {
   assert.ok(Number(n) >= 3);
 });
 test('el servidor estático sirve la aplicación y bloquea rutas fuera de /public', async () => {
-  const r = await fetch(base + '/'); assert.equal(r.status, 200); assert.match(await r.text(), /FieldPoint/);
+  const r = await fetch(base + '/'); assert.equal(r.status, 200); assert.match(await r.text(), /Tablero/);
   assert.equal((await fetch(base + '/..%2fpackage.json')).status, 404);
   assert.equal((await fetch(base + '/no-existe.html')).status, 404);
 });
 test('inicio de sesión por usuario (también acepta el correo) y formato del usuario', async () => {
-  const por = async (u) => (await call('POST', '/api/login', null, { usuario: u, password: 'FieldPoint2026*' }, { 'x-forwarded-for': '10.1.1.1' })).s;
-  assert.equal(await por('admin'), 200); assert.equal(await por('ADMIN'), 200); assert.equal(await por('admin@fieldpoint.co'), 200); assert.equal(await por('operador'), 200); assert.equal(await por('noexiste'), 401);
+  const por = async (u) => (await call('POST', '/api/login', null, { usuario: u, password: 'Tablero2026*' }, { 'x-forwarded-for': '10.1.1.1' })).s;
+  assert.equal(await por('admin'), 200); assert.equal(await por('ADMIN'), 200); assert.equal(await por('admin@tablero.test'), 200); assert.equal(await por('operador'), 200); assert.equal(await por('noexiste'), 401);
   assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'Sin usuario', id_rol: 2, password: 'ClaveSegura1' })).s, 400);
   assert.equal((await call('POST', '/api/usuarios', admin, { nombre: 'Malo', usuario: 'a b', id_rol: 2, password: 'ClaveSegura1' })).s, 400);
   const c = await call('POST', '/api/usuarios', admin, { nombre: 'Sin correo', usuario: 'sin.correo', id_rol: 2, password: 'ClaveSegura1' });

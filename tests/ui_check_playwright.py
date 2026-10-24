@@ -6,7 +6,7 @@ os.makedirs(out, exist_ok=True)
 res = []
 def ok(n, c): res.append((n, bool(c))); print(('OK    ' if c else 'FALLA ') + n)
 with sync_playwright() as p:
-    b = p.chromium.launch(); ctx = b.new_context(viewport={'width': 1280, 'height': 800}, accept_downloads=True); pg = ctx.new_page(); errs = []
+    b = p.chromium.launch(); ctx = b.new_context(viewport={'width': 1280, 'height': 800}, accept_downloads=True, bypass_csp=True); pg = ctx.new_page(); errs = []
     pg.on('dialog', lambda d: d.accept()); pg.on('pageerror', lambda e: errs.append(str(e))); pg.route('**/fonts.googleapis.com/**', lambda r: r.abort())
     T = lambda i: f'[data-testid={i}]'
     def shot(n, full=False):
@@ -16,7 +16,7 @@ with sync_playwright() as p:
         return pg.evaluate("fetch(window.__o.filter(u=>u&&u.startsWith('blob:')).pop()).then(r=>r.arrayBuffer()).then(b=>new TextDecoder().decode(b.slice(0,4)))") == '%PDF'
     pg.goto(base); pg.fill(T('login-usuario'), 'admin'); pg.fill(T('password'), 'mala'); pg.click(T('login-submit')); pg.wait_for_function("document.querySelector('[data-testid=login-error]').textContent!==''")
     ok('CP01 Login con credenciales inválidas muestra error', pg.inner_text(T('login-error')) == 'Credenciales no válidas'); shot('ui_login.png', False)
-    pg.fill(T('login-usuario'), 'admin'); pg.fill(T('password'), 'FieldPoint2026*'); pg.click(T('login-submit')); pg.wait_for_selector(T('tab-cobrar'))
+    pg.fill(T('login-usuario'), 'admin'); pg.fill(T('password'), 'Tablero2026*'); pg.click(T('login-submit')); pg.wait_for_selector(T('tab-cobrar'))
     ok('CP02 Login válido muestra la sesión del Administrador', 'Administrador' in pg.inner_text(T('usuario')))
     pg.click(T('tab-productos')); pg.wait_for_selector(T('tabla') + ' tr')
     ok('CP03 Consultar: lista de productos cargada', pg.locator(T('tabla') + ' tr').count() >= 7)
@@ -103,7 +103,7 @@ with sync_playwright() as p:
     pg.locator(T('tabla') + ' tr', has_text='prueba.ui').locator(T('eliminar')).click()
     pg.wait_for_function("!document.querySelector('[data-testid=tabla]').textContent.includes('prueba.ui')")
     ok('CP45 Administrador elimina un usuario sin historial', 'prueba.ui' not in pg.inner_text(T('tabla')))
-    pg.click(T('logout')); pg.fill(T('login-usuario'), 'operador'); pg.fill(T('password'), 'FieldPoint2026*'); pg.click(T('login-submit')); pg.wait_for_selector(T('tab-cobrar'))
+    pg.click(T('logout')); pg.fill(T('login-usuario'), 'operador'); pg.fill(T('password'), 'Tablero2026*'); pg.click(T('login-submit')); pg.wait_for_selector(T('tab-cobrar'))
     ok('CP25 El Operador ve Cobrar pero no Auditoría ni Negocio', pg.locator(T('tab-auditoria')).count() == 0 and pg.locator(T('tab-negocio')).count() == 0 and pg.locator(T('tab-usuarios')).count() == 0)
     pg.click(T('tab-reportes')); pg.wait_for_selector(T('kpis')); ok('CP26 El Operador solo tiene el reporte diario', pg.locator(T('periodo') + ' option').count() == 1)
     pg.click(T('tab-mesas')); pg.wait_for_selector(T('tablero'))

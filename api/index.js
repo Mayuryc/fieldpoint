@@ -119,6 +119,11 @@ async function crud(req, res, r, id, user, body, sp) {
     return send(res, 200, { ok: true });
   }
   if (!q.rows[0]) return send(res, 404, { error: 'No encontrado' });
+  if (r.t === 'clientes' && 'autorizacion_datos' in data) {
+    // La fecha de la autorización la fija el servidor, no el cliente de la API (prueba de consentimiento).
+    const f = await query('UPDATE clientes SET fecha_autorizacion = CASE WHEN autorizacion_datos THEN COALESCE(fecha_autorizacion, now()) ELSE NULL END WHERE id_cliente=$1 RETURNING fecha_autorizacion', [q.rows[0].id_cliente]);
+    q.rows[0].fecha_autorizacion = f.rows[0].fecha_autorizacion;
+  }
   await audit(user, m === 'POST' ? 'INSERT' : 'UPDATE', r.t);
   return send(res, m === 'POST' ? 201 : 200, fix(r, q.rows[0]));
 }

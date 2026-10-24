@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0A1F44"><title>FieldPoint · Sistema</title>
+<meta name="theme-color" content="#0A1F44"><title>Tablero · Sistema</title>
 <link rel="icon" type="image/png" href="assets/icon.png"><link rel="stylesheet" href="theme.css">
 </head><body>
-<div id="login"><form class="card" id="lf" data-testid="login-form"><img src="assets/logo-h.png" alt="FieldPoint · Football Business & Management Platform"><p>Ingrese para gestionar el negocio.</p>
+<div id="login"><form class="card" id="lf" data-testid="login-form"><img src="assets/logo-h.png" alt="Tablero · Gestión para tu negocio"><p>Ingrese para gestionar el negocio.</p>
 <label for="lu">Usuario</label><input id="lu" type="text" required data-testid="login-usuario" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Su nombre de usuario">
 <label for="pw">Contraseña</label><input id="pw" type="password" required data-testid="password" autocomplete="current-password">
 <div class="err" id="lerr" role="alert" data-testid="login-error"></div><button class="btn" data-testid="login-submit">Ingresar</button>
-<p class="note" style="margin-top:14px"><a href="prototipo.html">Ver prototipo de interfaz</a></p></form></div>
+<p class="note" style="margin-top:14px"><a href="prototipo.html">Ver prototipo de interfaz</a> · <a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p></form></div>
 <div id="app" hidden>
-<aside class="side"><img class="brand" src="assets/logo-side.png" alt="FieldPoint"><nav id="tabs" class="nav" aria-label="Módulos"></nav></aside>
+<aside class="side"><img class="brand" src="assets/logo-side.png" alt="Tablero"><nav id="tabs" class="nav" aria-label="Módulos"></nav></aside>
 <header class="topbar"><img class="mini" src="assets/icon.png" alt=""><h1 id="ttl"></h1><div class="user"><span id="who" data-testid="usuario"></span><button class="btn sm o" id="out" data-testid="logout">Salir</button></div></header>
 <main><div id="alerta"></div>
 <div class="bar" id="barra" hidden><input id="q" placeholder="Buscar por nombre…" data-testid="buscar" aria-label="Buscar"><button class="btn" id="new" data-testid="nuevo">+ Nuevo</button></div>

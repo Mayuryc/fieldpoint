@@ -1,12 +1,12 @@
 {
-  "name": "fieldpoint",
+  "name": "tablero",
   "version": "1.0.0",
-  "description": "FieldPoint - sistema de gestión para cancha sintética (Fase 3)",
+  "description": "Tablero - plataforma de mini apps de gestión para negocios (primera app: canchas y servicios)",
   "main": "desktop/main.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test tests/api.test.js tests/mejoras.test.js tests/mesas.test.js",
-    "test:coverage": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info tests/api.test.js tests/mejoras.test.js tests/mesas.test.js",
+    "test": "node --test tests/api.test.js tests/mejoras.test.js tests/mesas.test.js tests/privacidad.test.js",
+    "test:coverage": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info tests/api.test.js tests/mejoras.test.js tests/mesas.test.js tests/privacidad.test.js",
     "test:selenium": "node --test tests/selenium/crud.test.js",
     "lint": "eslint .",
     "desktop": "electron .",
@@ -34,8 +34,8 @@
     "node": ">=20"
   },
   "build": {
-    "appId": "co.fieldpoint.app",
-    "productName": "FieldPoint",
+    "appId": "co.tablero.app",
+    "productName": "Tablero",
     "directories": {
       "buildResources": "build",
       "output": "dist"
@@ -73,7 +73,7 @@
       "oneClick": true,
       "perMachine": false,
       "createDesktopShortcut": true,
-      "shortcutName": "FieldPoint"
+      "shortcutName": "Tablero"
     }
   },
   "overrides": {
